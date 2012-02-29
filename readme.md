@@ -20,6 +20,14 @@ Open - Opens a `*.md` or `*.markdown` file on your local drive. Discards anythin
 
 Close Window. I really like Ctrl+W as opposed to Alt+F4 (which works, but only because it's part of the operating system), so I implemented this.
 
+**Alt + Left**
+
+If you're in dual pane mode, Marky'll switch to single pane, editor only mode. If you're in editor only mode or rendered only mode, Marky'll switch to dual pane mode.
+
+**Alt + Right**
+
+If you're in dual pane mode, Marky'll switch to single pane, rendered only mode. If you're in rendered only mode or editor only mode, Marky'll switch to dual pane mode.
+
 
 ## Requirements
 
