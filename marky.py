@@ -67,127 +67,10 @@ class MarkyWindow(Gtk.Window):
 
 		self.filename = ""
 
-		self.style = """<style>
-h1, h2, h3, h4, h5, h6 {
-  border: 0 !important;
-}
-
-h1 {
-  font-size: 170% !important;
-  border-top: 4px solid #aaa !important;
-  padding-top: .5em !important;
-  margin-top: 1.5em !important;
-}
-
-  h1:first-child {
-    margin-top: 0 !important;
-    padding-top: .25em !important;
-    border-top: none !important;
-  }
-
-h2 {
-  font-size: 150% !important;
-  margin-top: 1.5em !important;
-  border-top: 4px solid #e0e0e0 !important;
-  padding-top: .5em !important;
-}
-
-h3 {
-  margin-top: 1em !important;
-}
-
-p {
-  margin: 1em 0 !important;
-  line-height: 1.5em !important;
-}
-
-ul {
-  margin: 1em 0 1em 2em !important;
-}
-
-  ul {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-ol {
-  margin: 1em 0 1em 2em !important;
-}
-
-  ol ol {
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-ul ul,
-ul ol,
-ol ol,
-ol ul {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-blockquote {
-  margin: 1em 0 !important;
-  border-left: 5px solid #ddd !important;
-  padding-left: .6em !important;
-  color: #555 !important;
-}
-
-dt {
-  font-weight: bold !important;
-  margin-left: 1em !important;
-}
-
-dd {
-  margin-left: 2em !important;
-  margin-bottom: 1em !important;
-}
-
-table {
-  margin: 1em 0 !important;
-}
-
-  table th {
-    border-bottom: 1px solid #bbb !important;
-    padding: .2em 1em !important;
-  }
-
-  table td {
-    border-bottom: 1px solid #ddd !important;
-    padding: .2em 1em !important;
-  }
-
-pre {
-  margin: 1em 0 !important;
-  font-size: 90% !important;
-  background-color: #f8f8ff !important;
-  border: 1px solid #dedede !important;
-  padding: .5em !important;
-  line-height: 1.5em !important;
-  color: #444 !important;
-  overflow: auto !important;
-}
-
-  pre code {
-    padding: 0 !important;
-    font-size: 100% !important;
-    background-color: #f8f8ff !important;
-    border: none !important;
-  }
-
-code {
-  font-size: 90% !important;
-  background-color: #f8f8ff !important;
-  color: #444 !important;
-  padding: 0 .2em !important;
-  border: 1px solid #dedede !important;
-}
-
-img,embed {max-width:100%;}
-li {padding-bottom:1em;}
-body {font-family: "Droid Sans",sans-serif; font-size:14px;}
-		</style>"""
+		self.style = "";
+		self.update_style()
+		
+		self.full = "unfull"
 		
 	def on_key(self, widget, event):
 		if event.state == Gdk.ModifierType.CONTROL_MASK:
@@ -195,10 +78,12 @@ body {font-family: "Droid Sans",sans-serif; font-size:14px;}
 				self.open()
 			elif Gdk.keyval_name(event.keyval) == "s":
 				self.save()
+			elif Gdk.keyval_name(event.keyval) == "f":
+				self.fullscreenize()
 			elif Gdk.keyval_name(event.keyval) == "w":
 				print "ctrl w"
 				Gtk.main_quit()
-		if event.state == Gdk.ModifierType.MOD1_MASK:
+		elif event.state == Gdk.ModifierType.MOD1_MASK:
 			if Gdk.keyval_name(event.keyval) == "Right":
 				if self.state == "both":
 					self.state = "right"
@@ -211,6 +96,13 @@ body {font-family: "Droid Sans",sans-serif; font-size:14px;}
 				elif self.state == "left" or self.state == "right":
 					self.state = "both"
 				self.mod_state()
+			elif Gdk.keyval_name(event.keyval) == "s":
+				self.set_file("css/marky.css")
+				self.get_text()
+				self.state = "left"
+				self.mod_state()
+		elif Gdk.keyval_name(event.keyval) == "F11":
+			self.fullscreenize()
 
 	def mod_state(self):
 		if self.state == "both":
@@ -228,6 +120,14 @@ body {font-family: "Droid Sans",sans-serif; font-size:14px;}
 			self.scrolled.hide()
 			self.table.remove(self.htmlscrolled)
 			self.table.attach(self.htmlscrolled, 0, 2, 0, 1)
+
+	def fullscreenize(self):
+		if self.full == "unfull":
+			self.fullscreen()
+			self.full = "full"
+		elif self.full == "full":
+			self.unfullscreen()
+			self.full = "unfull"
 
 	def update_markdown(self, widget, event):
 		self.html.load_html_string(self.style + markdown.markdown(
@@ -309,13 +209,16 @@ body {font-family: "Droid Sans",sans-serif; font-size:14px;}
 		response = dialog.run()
 		
 		if response == Gtk.ResponseType.OK:
-			self.filename = dialog.get_filename()
+			self.set_file(dialog.get_filename())
 		else:
 			return False
 
 		dialog.destroy()
 
 		self.get_text()
+		self.state = "both"
+		self.mod_state()
+		self.update_style()
 
 
 	def add_filters(self, dialog):
@@ -324,6 +227,13 @@ body {font-family: "Droid Sans",sans-serif; font-size:14px;}
 		filter_text.add_mime_type("text/x-markdown")
 		dialog.add_filter(filter_text)
 
+	def update_style(self):
+		cssfile = "css/marky.css"
+		cssopen = open(cssfile)
+		self.style = "<style>";
+		for line in cssopen:
+			self.style += line
+		self.style += "</style>"
 		
 # let's go...
 

@@ -16,6 +16,10 @@ Save - if you haven't saved yet and it's a new file, you'll be prompted for wher
 
 Open - Opens a `*.md` or `*.markdown` file on your local drive. Discards anything in the buffer (remember to save before opening a new file).
 
+**Ctrl + F**
+
+Fullscreen-ify Marky.
+
 **Ctrl + W**
 
 Close Window. I really like Ctrl+W as opposed to Alt+F4 (which works, but only because it's part of the operating system), so I implemented this.
@@ -27,6 +31,10 @@ If you're in dual pane mode, Marky'll switch to single pane, editor only mode. I
 **Alt + Right**
 
 If you're in dual pane mode, Marky'll switch to single pane, rendered only mode. If you're in rendered only mode or editor only mode, Marky'll switch to dual pane mode.
+
+**Alt + S**
+
+Open Marky's internal CSS file to edit. Right now, it doesn't have a live preview, however, I'm hoping to eventually have it dual-paned with a sample markdown file generated using the given css.
 
 
 ## Requirements
