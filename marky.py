@@ -2,6 +2,7 @@
 
 from gi.repository import Gtk, Gdk
 import markdown
+from sys import argv
 
 class MarkyWindow(Gtk.Window):
 	
@@ -17,7 +18,7 @@ class MarkyWindow(Gtk.Window):
 		
 		self.text = Gtk.TextView()
 		self.textbuff = self.text.get_buffer()
-		self.textbuff.set_text("Default Text")
+		self.textbuff.set_text("")
 		self.text.set_wrap_mode(Gtk.WrapMode.WORD)
 		scrolled.add(self.text)
 		
@@ -42,10 +43,12 @@ class MarkyWindow(Gtk.Window):
 		
 		table.attach(htmlscrolled, 1, 2, 0, 1)
 		
-		self.set_default_size(350, 700)
+		self.set_default_size(700, 350)
 		self.connect('key_press_event', self.on_key)
 		
 		self.connect('key_release_event', self.update_markdown)
+
+		self.filename = ""
 		
 	def on_key(self, widget, event):
 		if event.state == Gdk.ModifierType.CONTROL_MASK:
@@ -60,9 +63,39 @@ class MarkyWindow(Gtk.Window):
 				include_hidden_chars=True
 			)
 		))
+
+	def set_file(self, filename):
+		self.filename = filename
+
+	def get_text(self):
+		if self.filename == "":
+			return False
+
+		file = open(self.filename)
+		text = ""
+		for line in file:
+			text += line
+
+		self.textbuff.insert(self.textbuff.get_end_iter(), text)
+
+		self.htmlbuff.set_text(markdown.markdown(
+			self.textbuff.get_text(
+				self.textbuff.get_start_iter(),
+				self.textbuff.get_end_iter(),
+				include_hidden_chars=True
+			)
+		))
+
 		
+# let's go...
+
 
 win = MarkyWindow()
+
+if len(argv) == 2:
+	win.set_file(argv[1])
+	win.get_text()
+
 win.connect("delete-event", Gtk.main_quit)
 win.show_all()
 Gtk.main()
