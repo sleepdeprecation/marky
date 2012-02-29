@@ -54,6 +54,9 @@ class MarkyWindow(Gtk.Window):
 		if event.state == Gdk.ModifierType.CONTROL_MASK:
 			if Gdk.keyval_name(event.keyval) == "o":
 				print "control + o?"
+			elif Gdk.keyval_name(event.keyval) == "s":
+				print "control + s?"
+				self.save()
 	
 	def update_markdown(self, widget, event):
 		self.htmlbuff.set_text(markdown.markdown(
@@ -85,6 +88,34 @@ class MarkyWindow(Gtk.Window):
 				include_hidden_chars=True
 			)
 		))
+
+	def save(self):
+		if self.filename == "":
+			dialog = Gtk.FileChooserDialog(
+				"Save Where?",
+				self,
+				Gtk.FileChooserAction.SAVE,
+				(
+					Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
+					Gtk.STOCK_OPEN, Gtk.ResponseType.OK
+				)
+			)
+
+			self.add_filters(dialog)
+			response = dialog.run()
+			if response == Gtk.ResponseType.OK:
+				self.filename = dialog.get_filename()
+			else:
+				return False
+
+		writer = open(self.filename, "w")
+		writer.write(
+			self.textbuff.get_text(
+				self.textbuff.get_start_iter(),
+				self.textbuff.get_end_iter(),
+				include_hidden_chars=True
+			)
+		)
 
 		
 # let's go...

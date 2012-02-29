@@ -1,4 +1,4 @@
-# Marky
+# Marky - Something
 
 Marky is a simple markdown editor that utilizes the GTK and is written in python.
 
