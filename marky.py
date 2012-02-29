@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, WebKit
 import markdown
 from sys import argv
 
@@ -28,17 +28,8 @@ class MarkyWindow(Gtk.Window):
 		htmlscrolled.set_hexpand(True)
 		htmlscrolled.set_vexpand(True)
 		
-		self.html = Gtk.TextView()
-		self.html.set_wrap_mode(Gtk.WrapMode.WORD)
-		self.html.set_editable(False)
-		self.htmlbuff = self.html.get_buffer()
-		self.htmlbuff.set_text(markdown.markdown(
-			self.textbuff.get_text(
-				self.textbuff.get_start_iter(),
-				self.textbuff.get_end_iter(),
-				include_hidden_chars=True
-			)
-		))
+		self.html = WebKit.WebView()
+
 		htmlscrolled.add(self.html)
 		
 		table.attach(htmlscrolled, 1, 2, 0, 1)
@@ -49,6 +40,12 @@ class MarkyWindow(Gtk.Window):
 		self.connect('key_release_event', self.update_markdown)
 
 		self.filename = ""
+
+		self.style = """<style>
+img {max-width:100%;}
+li {padding-bottom:1em;}
+body {font-family:"arimo", sans-serif; font-size:12px;}
+		</style>"""
 		
 	def on_key(self, widget, event):
 		if event.state == Gdk.ModifierType.CONTROL_MASK:
@@ -61,13 +58,13 @@ class MarkyWindow(Gtk.Window):
 				Gtk.main_quit()
 	
 	def update_markdown(self, widget, event):
-		self.htmlbuff.set_text(markdown.markdown(
+		self.html.load_html_string(self.style + markdown.markdown(
 			self.textbuff.get_text(
 				self.textbuff.get_start_iter(),
 				self.textbuff.get_end_iter(),
 				include_hidden_chars=True
-			)
-		))
+			)), "file:///"
+		)
 
 	def set_file(self, filename):
 		self.filename = filename
@@ -83,13 +80,13 @@ class MarkyWindow(Gtk.Window):
 
 		self.textbuff.set_text(text)
 
-		self.htmlbuff.set_text(markdown.markdown(
+		self.html.load_html_string(self.style + markdown.markdown(
 			self.textbuff.get_text(
 				self.textbuff.get_start_iter(),
 				self.textbuff.get_end_iter(),
 				include_hidden_chars=True
-			)
-		))
+			)), "file:///"
+		)
 
 	def save(self):
 		if self.filename == "":

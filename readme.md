@@ -1,21 +1,28 @@
 # Marky
 
-Marky is a simple markdown editor that utilizes the GTK and is written in python.
+Marky is a very simple markdown editor written in python.
 
-Right now, Marky doesn't do anything other than render any markdown you place in the left pane to html in the right. Eventually I'll add in a webkit (or maybe gecko) based rendering engine to display the html, but for now, that's all it does.
+Marky has one main feature: you write markdown in the left pane, it gets generated into html so you can see what it'll look like in the right pane.
 
-If you specify a file as an argument in calling marky (`./marky.py readme.md`), it will open up that file, and display the generated html.
+Like I said, simple.
 
-Marky can now open and save files using Ctrl+O and Ctrl+S respectively. That is all.
+## Keyboard Shortcuts
 
-Also, Ctrl+W closes it too.
+**Ctrl + S**
+
+Save - if you haven't saved yet and it's a new file, you'll be prompted for where you want to save the file.
+
+**Ctrl + O**
+
+Open - Opens a `*.md` or `*.markdown` file on your local drive. Discards anything in the buffer (remember to save before opening a new file).
+
+**Ctrl + W**
+
+Close Window. I really like Ctrl+W as opposed to Alt+F4 (which works, but only because it's part of the operating system), so I implemented this.
+
 
 ## Requirements
 
 - Python2 (duh?)
 - PyGtk (Arch package: pygtk)
 - python2-markdown (some distros might use python-markdown, making python3's python3-markdown)
-
-## Future
-
-Eventually it'll have two keybindings - Ctrl+O and Ctrl+S to open and save. Nothing else. It does support OS based clipboards, so Ctrl+C/Ctrl+V words. It looks like Ctrl+A also works.
