@@ -53,10 +53,12 @@ class MarkyWindow(Gtk.Window):
 	def on_key(self, widget, event):
 		if event.state == Gdk.ModifierType.CONTROL_MASK:
 			if Gdk.keyval_name(event.keyval) == "o":
-				print "control + o?"
+				self.open()
 			elif Gdk.keyval_name(event.keyval) == "s":
-				print "control + s?"
 				self.save()
+			elif Gdk.keyval_name(event.keyval) == "w":
+				print "ctrl w"
+				Gtk.main_quit()
 	
 	def update_markdown(self, widget, event):
 		self.htmlbuff.set_text(markdown.markdown(
@@ -79,7 +81,7 @@ class MarkyWindow(Gtk.Window):
 		for line in file:
 			text += line
 
-		self.textbuff.insert(self.textbuff.get_end_iter(), text)
+		self.textbuff.set_text(text)
 
 		self.htmlbuff.set_text(markdown.markdown(
 			self.textbuff.get_text(
@@ -103,10 +105,13 @@ class MarkyWindow(Gtk.Window):
 
 			self.add_filters(dialog)
 			response = dialog.run()
+			
 			if response == Gtk.ResponseType.OK:
 				self.filename = dialog.get_filename()
 			else:
 				return False
+
+			dialog.destroy()
 
 		writer = open(self.filename, "w")
 		writer.write(
@@ -116,6 +121,36 @@ class MarkyWindow(Gtk.Window):
 				include_hidden_chars=True
 			)
 		)
+
+	def open(self):
+		dialog = Gtk.FileChooserDialog(
+			"What File?",
+			self,
+			Gtk.FileChooserAction.SAVE,
+			(
+				Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, 
+				Gtk.STOCK_OPEN, Gtk.ResponseType.OK
+			)
+		)
+
+		self.add_filters(dialog)
+		response = dialog.run()
+		
+		if response == Gtk.ResponseType.OK:
+			self.filename = dialog.get_filename()
+		else:
+			return False
+
+		dialog.destroy()
+
+		self.get_text()
+
+
+	def add_filters(self, dialog):
+		filter_text = Gtk.FileFilter()
+		filter_text.set_name("Markdown files")
+		filter_text.add_mime_type("text/x-markdown")
+		dialog.add_filter(filter_text)
 
 		
 # let's go...
