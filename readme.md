@@ -26,3 +26,7 @@ Close Window. I really like Ctrl+W as opposed to Alt+F4 (which works, but only b
 - Python2 (duh?)
 - PyGtk (Arch package: pygtk)
 - python2-markdown (some distros might use python-markdown, making python3's python3-markdown)
+
+## History
+
+Marky was started at about 2200 on 28 Feb 2012. It is considered complete (there could be some optimizations) as of 0200 on 29 Feb 2012. Enjoy this four hour project. It does one task, and one task only.
