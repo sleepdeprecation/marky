@@ -12,6 +12,10 @@ Like I said, simple.
 
 Save - if you haven't saved yet and it's a new file, you'll be prompted for where you want to save the file.
 
+**Ctrl + Shift + S**
+
+Save As - same as save, but it will always give you the file prompt.
+
 **Ctrl + O**
 
 Open - Opens a `*.md` or `*.markdown` file on your local drive. Discards anything in the buffer (remember to save before opening a new file).
@@ -34,6 +38,10 @@ If you're in dual pane mode, Marky'll switch to single pane, rendered only mode.
 
 **Alt + S**
 
+Open Marky's internal settings file to edit.
+
+**Alt + C**
+
 Open Marky's internal CSS file to edit. Right now, it doesn't have a live preview, however, I'm hoping to eventually have it dual-paned with a sample markdown file generated using the given css.
 
 
@@ -42,6 +50,7 @@ Open Marky's internal CSS file to edit. Right now, it doesn't have a live previe
 - Python2 (duh?)
 - PyGtk (Arch package: pygtk)
 - python2-markdown (some distros might use python-markdown, making python3's python3-markdown)
+- pyyaml (for the settings)
 
 ## History
 

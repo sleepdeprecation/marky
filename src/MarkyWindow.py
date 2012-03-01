@@ -184,7 +184,14 @@ class MarkyWindow(Gtk.Window):
 
 			# alt + s
 			elif Gdk.keyval_name(event.keyval) == "s":
-				self.set_file("css/marky.css")
+				self.set_file(self.settings_file)
+				self.get_text()
+				self.state = "left"
+				self.mod_state()
+
+			# alt + c
+			elif Gdk.keyval_name(event.keyval) == "c":
+				self.set_file(self.css_file)
 				self.get_text()
 				self.state = "left"
 				self.mod_state()
