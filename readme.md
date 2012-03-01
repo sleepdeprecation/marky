@@ -16,7 +16,7 @@ Save - if you haven't saved yet and it's a new file, you'll be prompted for wher
 
 Open - Opens a `*.md` or `*.markdown` file on your local drive. Discards anything in the buffer (remember to save before opening a new file).
 
-**Ctrl + F**
+**Ctrl + F || F11**
 
 Fullscreen-ify Marky.
 

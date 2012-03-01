@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 
 from gi.repository import Gtk, Gdk, Pango, WebKit
-import markdown
+import markdown, yaml
 from sys import argv
 
 class MarkyWindow(Gtk.Window):
