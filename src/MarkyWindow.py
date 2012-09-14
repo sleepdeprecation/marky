@@ -26,33 +26,39 @@ class MarkyWindow(Gtk.Window):
 		# state:	The starting state for the MarkyWindow.
 		#			Options: both | left | right
 		self.state = "both"
+
+		# size:		An array containing the width and height
+		#			for the window.
+		self.size = [700, 500]
 		
 		# filename:	The name of the currently open file.
 		#			If there isn't an open file, it's just ""
 		self.filename = ""
 
-		# style:	Will eventually containe the CSS used to make 
+		# style:	Will eventually contain the CSS used to make 
 		#			Marky's rendered pane all pretty-like
 		self.style = ""
 
 		# full:		Is Marky running in full screen?
-		#			Options: unfull | full
-		self.full = "unfull"
+		#			Options: True | False
+		self.full = False
 
 		# Grab the settings from marky.yml
 		self.settings = self.load_yaml()
 
 		# adjust the settings to the newly loaded settings...
 		self.state = self.settings['start-state']
+		self.size = self.settings['start-size']
 
 		# alright, let's build the GUI
 		self.build_gui() 
 		self.update_style()
 
-		self.set_default_size(700, 500)
+		self.set_default_size(self.size[0], self.size[1])
 		
 		self.connect('key_press_event', self.on_key)
 		self.connect('key_release_event', self.update_markdown)
+		self.connect('delete-event', self.quit)
 
 	# Internal: load the settings from settings/marky.yml
 	def load_yaml(self):
@@ -61,6 +67,14 @@ class MarkyWindow(Gtk.Window):
 		for line in file:
 			cont += line
 		return yaml.load(cont)
+
+	# Internal: save the settings to settings/marky.yml
+	def save_yaml(self):
+		self.settings['start-size'] = list(self.get_size())
+		self.settings['start-state'] = self.state
+
+		writer = open(self.settings_file, "w")
+		writer.write(yaml.dump(self.settings))
 
 	# Internal: Create the basic GUI structure
 	def build_gui(self):
@@ -143,26 +157,31 @@ class MarkyWindow(Gtk.Window):
 	def on_key(self, widget, event):
 		# if it's modified with a CTRL key
 		if event.state == Gdk.ModifierType.CONTROL_MASK:
+			# ctrl + e
+			'''if Gdk.keyval_name(event.keyval) == "e":
+				self.change_font()
+			'''
+			# ctrl + f
+			if Gdk.keyval_name(event.keyval) == "f":
+				self.fullscreenize()
+			
 			# ctrl + o
-			if Gdk.keyval_name(event.keyval) == "o":
+			elif Gdk.keyval_name(event.keyval) == "o":
 				self.open()
 
 			# ctrl + s
 			elif Gdk.keyval_name(event.keyval) == "s":
 				self.save()
 
-			# ctrl + S
+			# ctrl + shift + S
 			elif Gdk.keyval_name(event.keyval) == "S":
 				self.pick_file()
 				self.save()
 
-			# ctrl + f
-			elif Gdk.keyval_name(event.keyval) == "f":
-				self.fullscreenize()
-
 			# ctrl + w
 			elif Gdk.keyval_name(event.keyval) == "w":
-				Gtk.main_quit()
+				self.quit(widget, event)
+
 
 		# if it's modified with an ALT key
 		elif event.state == Gdk.ModifierType.MOD1_MASK:
@@ -280,12 +299,12 @@ class MarkyWindow(Gtk.Window):
 
 	# Public: make Marky fullscreen. or if it's already full, unfull it.
 	def fullscreenize(self):
-		if self.full == "unfull":
+		if self.full:
+			self.unfullscreen();
+			self.full = False
+		elif not self.unfull:
 			self.fullscreen()
-			self.full = "full"
-		elif self.full == "full":
-			self.unfullscreen()
-			self.full = "unfull"
+			self.full = True
 
 	# Public: Update the html section
 	def update_markdown(self, widget, event):
@@ -322,8 +341,28 @@ class MarkyWindow(Gtk.Window):
 			)), "file:///"
 		)
 
+	# Internal: Quit the application
+	def quit(self, widget, event):
+		try:
+			self.save_yaml()
+		except IOError as io:
+			print "error saving file"
+			print io
 
+		Gtk.main_quit()
 
+	# Internal: Change the editor's font
+	'''def change_font(self):
+		fontsel = Gtk.FontSelectionDialog("Editor Font")
 
-
+		fontsel.set_font_name(
+			self.settings['font-family'] +
+			" " + 
+			str(self.settings['font-size'])
+		)
 		
+		fontsel.show()
+		fontsel.ok_button
+
+		if fontsel.ok_button:
+			print fontsel.get_font_name()'''
